@@ -12,22 +12,6 @@
     }
   },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_HTTPS_PORT": "443",
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "blackmaw.api2": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000",
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
     "IIS": {
       "commandName": "IIS",
       "launchBrowser": true
