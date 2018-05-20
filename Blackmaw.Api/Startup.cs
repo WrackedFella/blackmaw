@@ -1,6 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.IO.Compression;
-using blackmaw.api.AutoMapper;
+using Blackmaw.Api.AutoMapper;
 using Blackmaw.Dal.DbContext;
 using Blackmaw.Dal.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 
-namespace blackmaw.api
+namespace Blackmaw.Api
 {
     public class Startup
     {

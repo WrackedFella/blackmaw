@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace blackmaw.api.Core
+namespace Blackmaw.Api.Core
 {
     [Route("api/[controller]")]
     public abstract class ControllerBase<TEntity, TModel> : Controller

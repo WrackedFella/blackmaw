@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using blackmaw.api.AutoMapper.Profiles;
+using Blackmaw.Api.AutoMapper.Profiles;
 
-namespace blackmaw.api.AutoMapper
+namespace Blackmaw.Api.AutoMapper
 {
     public class AutoMapperConfig
     {

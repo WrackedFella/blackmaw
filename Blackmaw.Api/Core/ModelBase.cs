@@ -1,4 +1,4 @@
-﻿namespace blackmaw.api.Core
+﻿namespace Blackmaw.Api.Core
 {
     public class ModelBase
     {

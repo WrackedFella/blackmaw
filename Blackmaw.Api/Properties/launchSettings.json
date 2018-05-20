@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://localhost/blackmaw.api",
+      "applicationUrl": "http://localhost/Blackmaw.Api",
       "sslPort": 0
     },
     "iisExpress": {

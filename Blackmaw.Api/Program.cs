@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using NLog.Web;
 
-namespace blackmaw.api
+namespace Blackmaw.Api
 {
     public class Program
     {

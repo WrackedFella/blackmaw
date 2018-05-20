@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27428.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blackmaw.Dal", "Blackmaw.Dal\Blackmaw.Dal.csproj", "{4CC3C56D-A49E-4141-A325-AD61FF70F8FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blackmaw.api", "blackmaw.api\blackmaw.api.csproj", "{D41C4F33-1FF9-4858-BCA7-EFEC82B792C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blackmaw.Api", "blackmaw.api\Blackmaw.Api.csproj", "{D41C4F33-1FF9-4858-BCA7-EFEC82B792C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

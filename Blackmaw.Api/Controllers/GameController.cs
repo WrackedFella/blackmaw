@@ -1,5 +1,5 @@
-﻿using blackmaw.api.Core;
-using blackmaw.api.Models;
+﻿using Blackmaw.Api.Core;
+using Blackmaw.Api.Models;
 using Blackmaw.Dal.DbContext;
 using Blackmaw.Dal.Entities;
 using Microsoft.Extensions.Logging;
