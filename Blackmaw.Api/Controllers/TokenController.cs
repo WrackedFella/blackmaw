@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Blackmaw.Api.Core;
+using Blackmaw.Dal.DbContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -11,11 +12,11 @@ using Microsoft.IdentityModel.Tokens;
 namespace Blackmaw.Api.Controllers
 {
     [Route("api/[controller]")]
-    public class TokenController : BaseController
+    public class TokenController : Controller
     {
         private readonly IConfiguration _config;
 
-        public TokenController(IConfiguration config)
+        public TokenController(BmDbContext context, IConfiguration config)
         {
             this._config = config;
         }

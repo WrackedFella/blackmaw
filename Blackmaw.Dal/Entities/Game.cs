@@ -4,7 +4,7 @@ using Blackmaw.Dal.Core;
 
 namespace Blackmaw.Dal.Entities
 {
-    public class Game : BaseEntity
+    public class Game : EntityBase
     {
         public string Name { get; set; }
 

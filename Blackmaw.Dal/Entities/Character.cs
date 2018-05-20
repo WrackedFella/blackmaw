@@ -3,7 +3,7 @@ using System;
 
 namespace Blackmaw.Dal.Entities
 {
-    public class Character : BaseEntity
+    public class Character : EntityBase
     {
         public string Name { get; set; }
 
