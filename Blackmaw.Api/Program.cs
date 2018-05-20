@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using NLog.Web;
 
-namespace Blackmaw.Api
+namespace blackmaw.api
 {
     public class Program
     {
@@ -13,6 +14,7 @@ namespace Blackmaw.Api
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseNLog()
                 .Build();
     }
 }

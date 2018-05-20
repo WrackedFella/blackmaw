@@ -1,23 +1,22 @@
-﻿using Blackmaw.Api.AutoMapper;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.IO.Compression;
+using blackmaw.api.AutoMapper;
 using Blackmaw.Dal.DbContext;
 using Blackmaw.Dal.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using NLog.Web;
-using System.IO.Compression;
-using Microsoft.AspNetCore.Http;
 
-namespace Blackmaw.Api
+namespace blackmaw.api
 {
     public class Startup
     {
@@ -33,16 +32,15 @@ namespace Blackmaw.Api
         {
             services.AddSingleton(this.Configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            
+
             ConfigureContexts(services);
             ConfigureAuth(services);
             ConfigureCompression(services);
             ConfigureMvc(services);
             ConfigureLogging(services);
 
-            
             AutoMapperConfig.RegisterAutoMapperProfiles();
-            
+
             services.AddMvc();
         }
 
@@ -55,24 +53,25 @@ namespace Blackmaw.Api
             }
 
             app.UseAuthentication();
-            app.UseMvc();
+            app.UseResponseCompression();
             app.UseCors("CorsPolicy");
+            app.UseMvc();
         }
 
         private void ConfigureAuth(IServiceCollection services)
         {
-            var domain = $"https://{this.Configuration["Blackmaw:Domain"]}/";
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.RequireHttpsMetadata = false;
-                options.SaveToken = true;
-                options.Authority = domain;
-                options.Audience = this.Configuration["Blackmaw:Audience"];
-            });
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                }).AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                });
 
 
             services.AddCors(options =>
@@ -121,7 +120,7 @@ namespace Blackmaw.Api
                 .Build();
 
             services
-                .AddMvc(options => options.Filters.Add(new AuthorizeFilter(policy)))
+                .AddMvc()//.AddMvc(options => options.Filters.Add(new AuthorizeFilter(policy)))
                 .AddJsonOptions(options => options.SerializerSettings.DateFormatString = "yyyy-MM-dd");
         }
 

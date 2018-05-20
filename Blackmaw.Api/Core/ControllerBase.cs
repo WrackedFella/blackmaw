@@ -1,6 +1,4 @@
-﻿
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -11,8 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Blackmaw.Api.Core
+namespace blackmaw.api.Core
 {
+    [Route("api/[controller]")]
     public abstract class ControllerBase<TEntity, TModel> : Controller
         where TEntity : EntityBase
         where TModel : ModelBase

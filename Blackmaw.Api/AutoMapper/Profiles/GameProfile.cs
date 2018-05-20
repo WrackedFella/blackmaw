@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Blackmaw.Api.Models;
+using blackmaw.api.Models;
 using Blackmaw.Dal.Entities;
 
-namespace Blackmaw.Api.AutoMapper.Profiles
+namespace blackmaw.api.AutoMapper.Profiles
 {
     public class GameProfile : Profile
     {

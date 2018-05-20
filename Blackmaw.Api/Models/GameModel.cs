@@ -1,6 +1,6 @@
-﻿using Blackmaw.Api.Core;
+﻿using blackmaw.api.Core;
 
-namespace Blackmaw.Api.Models
+namespace blackmaw.api.Models
 {
     public class GameModel  : ModelBase
     {
