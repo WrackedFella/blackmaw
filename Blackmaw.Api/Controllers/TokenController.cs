@@ -1,11 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using Blackmaw.Dal.DbContext;
+using Blackmaw.Dal.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Blackmaw.Api.Controllers
@@ -13,58 +19,94 @@ namespace Blackmaw.Api.Controllers
     [Route("api/[controller]")]
     public class TokenController : Controller
     {
-        private readonly IConfiguration _config;
+        private readonly SignInManager<BlacmawUser> _signInManager;
+        private readonly UserManager<BlacmawUser> _userManager;
+        private readonly RoleManager<BlackmawRole> _roleManager;
+        private readonly ILogger<TokenController> _logger;
+        private readonly IConfiguration _configuration;
 
-        public TokenController(BmDbContext context, IConfiguration config)
+        public TokenController(
+            UserManager<BlacmawUser> userManager,
+            SignInManager<BlacmawUser> signInManager,
+            RoleManager<BlackmawRole> roleManager,
+            IConfiguration configuration,
+            ILogger<TokenController> logger)
         {
-            this._config = config;
+            this._signInManager = signInManager;
+            this._userManager = userManager;
+            this._roleManager = roleManager;
+            this._logger = logger;
+            this._configuration = configuration;
         }
-
+        
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult CreateToken([FromBody]LoginModel login)
+        public async Task<IActionResult> Authenticate([FromBody]LoginModel model)
         {
-            IActionResult response = Unauthorized();
-            var user = Authenticate(login);
+            var result = await this._signInManager.PasswordSignInAsync(model.Username, model.Password, false, false);
 
-            if (user != null)
+            if (!result.Succeeded)
             {
-                var tokenString = BuildToken(user);
-                response = Ok(new { token = tokenString });
+                return BadRequest();
             }
 
-            return response;
+            var user = this._userManager.Users.SingleOrDefault(r => r.UserName == model.Username);
+            var q = GenerateJwtToken(model.Username, user);
+            return Json(q);
+        }
+        
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("Register")]
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var user = new BlacmawUser
+            {
+                UserName = model.Username,
+                Email = model.Username
+            };
+            var result = await this._userManager.CreateAsync(user, model.Password);
+
+            if (result.Errors.Any())
+            {
+                foreach (var error in result.Errors)
+                {
+                    this._logger.LogError($"Error updating user. {error.Code} : {error.Description}");
+                }
+
+                return BadRequest();
+            }
+            
+            return await Authenticate(new LoginModel { Username = model.Username, Password = model.Password });
         }
 
-        private string BuildToken(UserModel user)
+        private object GenerateJwtToken(string username, BlacmawUser user)
         {
-            var claims = new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Name),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Birthdate, user.Birthdate.ToString("yyyy-MM-dd")),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, username),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                // This line makes UserName available off of the Identity object.
+                new Claim(ClaimTypes.Name, username)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._config["Jwt:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddDays(Convert.ToDouble(30));
 
-            var token = new JwtSecurityToken(this._config["Jwt:Issuer"], this._config["Jwt:Issuer"],
-              claims,
-              expires: DateTime.Now.AddMinutes(30),
-              signingCredentials: creds);
+            var token = new JwtSecurityToken(this._configuration["Issuer"], this._configuration["Issuer"],
+                claims,
+                expires: expires,
+                signingCredentials: creds
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        private UserModel Authenticate(LoginModel login)
-        {
-            UserModel user = null;
-
-            if (login.Username == "mario" && login.Password == "secret")
-            {
-                user = new UserModel { Name = "Mario Rossi", Email = "mario.rossi@domain.com" };
-            }
-            return user;
         }
 
         public class LoginModel
@@ -73,11 +115,13 @@ namespace Blackmaw.Api.Controllers
             public string Password { get; set; }
         }
 
-        private class UserModel
+        public class RegisterModel
         {
-            public string Name { get; set; }
-            public string Email { get; set; }
-            public DateTime Birthdate { get; set; }
+            public string Username { get; set; }
+            public string Password { get; set; }
+            //public string Name { get; set; }
+            //public string Email { get; set; }
+            //public DateTime Birthdate { get; set; }
         }
     }
 }

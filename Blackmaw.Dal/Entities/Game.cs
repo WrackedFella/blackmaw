@@ -9,8 +9,8 @@ namespace Blackmaw.Dal.Entities
         public string Name { get; set; }
 
         public Guid RuleSystemId { get; set; }
-        public RuleSystem RuleSystem { get; set; }
+        public virtual RuleSystem RuleSystem { get; set; }
         
-        public ICollection<Character> Characters { get; set; } = new HashSet<Character>();
+        public virtual ICollection<Character> Characters { get; set; } = new HashSet<Character>();
     }
 }

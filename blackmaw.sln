@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blackmaw.Dal", "Blackmaw.Da
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blackmaw.Api", "blackmaw.api\Blackmaw.Api.csproj", "{D41C4F33-1FF9-4858-BCA7-EFEC82B792C7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blackmaw.UnitTests", "Blackmaw.UnitTests\Blackmaw.UnitTests.csproj", "{190D72B0-1DAC-4960-9577-E77E99E78E48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{D41C4F33-1FF9-4858-BCA7-EFEC82B792C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D41C4F33-1FF9-4858-BCA7-EFEC82B792C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D41C4F33-1FF9-4858-BCA7-EFEC82B792C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{190D72B0-1DAC-4960-9577-E77E99E78E48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{190D72B0-1DAC-4960-9577-E77E99E78E48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{190D72B0-1DAC-4960-9577-E77E99E78E48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{190D72B0-1DAC-4960-9577-E77E99E78E48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

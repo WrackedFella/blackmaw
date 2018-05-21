@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.IO.Compression;
 using Blackmaw.Api.AutoMapper;
+using Blackmaw.Api.ExceptionHandling;
 using Blackmaw.Dal.DbContext;
 using Blackmaw.Dal.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -55,6 +57,8 @@ namespace Blackmaw.Api
             app.UseAuthentication();
             app.UseResponseCompression();
             app.UseCors("CorsPolicy");
+            app.UseStaticFiles();
+            app.UseMiddleware(typeof(BlackmawExceptionHandlingMiddleware));
             app.UseMvc();
         }
 
@@ -107,7 +111,7 @@ namespace Blackmaw.Api
 #endif
             });
 
-            services.AddIdentity<BmUser, BmRole>()
+            services.AddIdentity<BlacmawUser, BlackmawRole>()
                 .AddEntityFrameworkStores<BmDbContext>()
                 .AddDefaultTokenProviders();
         }
@@ -120,7 +124,7 @@ namespace Blackmaw.Api
                 .Build();
 
             services
-                .AddMvc()//.AddMvc(options => options.Filters.Add(new AuthorizeFilter(policy)))
+                .AddMvc(options => options.Filters.Add(new AuthorizeFilter(policy)))
                 .AddJsonOptions(options => options.SerializerSettings.DateFormatString = "yyyy-MM-dd");
         }
 

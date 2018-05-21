@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blackmaw.Dal.DbContext
 {
-    public class BmDbContext : IdentityDbContext<BmUser, BmRole, Guid>
+    public class BmDbContext : IdentityDbContext<BlacmawUser, BlackmawRole, Guid>
     {
         public DbSet<Game> Games { get; set; }
         public DbSet<Character> Characters { get; set; }
