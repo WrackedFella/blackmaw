@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Blackmaw.Dal.DbContext;
 using Blackmaw.Dal.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -19,22 +18,19 @@ namespace Blackmaw.Api.Controllers
     [Route("api/[controller]")]
     public class TokenController : Controller
     {
-        private readonly SignInManager<BlacmawUser> _signInManager;
-        private readonly UserManager<BlacmawUser> _userManager;
-        private readonly RoleManager<BlackmawRole> _roleManager;
+        private readonly SignInManager<BlackmawUser> _signInManager;
+        private readonly UserManager<BlackmawUser> _userManager;
         private readonly ILogger<TokenController> _logger;
         private readonly IConfiguration _configuration;
 
         public TokenController(
-            UserManager<BlacmawUser> userManager,
-            SignInManager<BlacmawUser> signInManager,
-            RoleManager<BlackmawRole> roleManager,
+            UserManager<BlackmawUser> userManager,
+            SignInManager<BlackmawUser> signInManager,
             IConfiguration configuration,
             ILogger<TokenController> logger)
         {
             this._signInManager = signInManager;
             this._userManager = userManager;
-            this._roleManager = roleManager;
             this._logger = logger;
             this._configuration = configuration;
         }
@@ -49,7 +45,7 @@ namespace Blackmaw.Api.Controllers
             {
                 return BadRequest();
             }
-
+            
             var user = this._userManager.Users.SingleOrDefault(r => r.UserName == model.Username);
             var q = GenerateJwtToken(model.Username, user);
             return Json(q);
@@ -65,7 +61,7 @@ namespace Blackmaw.Api.Controllers
                 return BadRequest();
             }
 
-            var user = new BlacmawUser
+            var user = new BlackmawUser
             {
                 UserName = model.Username,
                 Email = model.Username
@@ -85,7 +81,7 @@ namespace Blackmaw.Api.Controllers
             return await Authenticate(new LoginModel { Username = model.Username, Password = model.Password });
         }
 
-        private object GenerateJwtToken(string username, BlacmawUser user)
+        private object GenerateJwtToken(string username, BlackmawUser user)
         {
             List<Claim> claims = new List<Claim>
             {

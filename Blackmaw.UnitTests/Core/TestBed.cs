@@ -1,9 +1,11 @@
 ﻿using Blackmaw.Dal.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
 namespace Blackmaw.UnitTests.Core
 {
+    [Collection("AutoMapper")]
     public class TestBed
     {
         protected AutoMapperFixture Fixture;

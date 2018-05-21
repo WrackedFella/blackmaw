@@ -58,7 +58,7 @@ namespace Blackmaw.Api
             app.UseResponseCompression();
             app.UseCors("CorsPolicy");
             app.UseStaticFiles();
-            app.UseMiddleware(typeof(BlackmawExceptionHandlingMiddleware));
+            app.UseMiddleware(typeof(ExceptionMiddleware));
             app.UseMvc();
         }
 
@@ -111,7 +111,7 @@ namespace Blackmaw.Api
 #endif
             });
 
-            services.AddIdentity<BlacmawUser, BlackmawRole>()
+            services.AddIdentity<BlackmawUser, BlackmawRole>()
                 .AddEntityFrameworkStores<BmDbContext>()
                 .AddDefaultTokenProviders();
         }
