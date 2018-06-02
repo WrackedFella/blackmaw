@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Blackmaw.Api.Core
 {
+    [ApiController]
     [Route("api/[controller]")]
     public abstract class ControllerBase<TEntity, TModel> : Controller
         where TEntity : EntityBase
@@ -26,13 +27,13 @@ namespace Blackmaw.Api.Core
         }
 
         [HttpGet]
-        public virtual async Task<IEnumerable<TModel>> GetAll()
+        public virtual async Task<ActionResult<IEnumerable<TModel>>> GetAll()
         {
             return await this.Context.Set<TEntity>().ProjectTo<TModel>().ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id)
+        public async Task<ActionResult<TModel>> GetById(string id)
         {
             var record = await this.Context.Set<TEntity>().FindAsync(id);
             if (record == null)
@@ -41,11 +42,11 @@ namespace Blackmaw.Api.Core
             }
 
             var result = Mapper.Map<TModel>(record);
-            return Ok(result);
+            return result;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] TModel model)
+        public async Task<ActionResult<CreatedAtRouteResult>> Create([FromBody] TModel model)
         {
             if (model == null)
             {
@@ -60,7 +61,7 @@ namespace Blackmaw.Api.Core
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] TModel model)
+        public async Task<ActionResult<AcceptedAtRouteResult>> Update(string id, [FromBody] TModel model)
         {
             if (model == null || model.Id != id)
             {
@@ -81,7 +82,7 @@ namespace Blackmaw.Api.Core
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch(string id, [FromBody]JsonPatchDocument<TModel> patch)
+        public async Task<ActionResult<AcceptedAtRouteResult>> Patch(string id, [FromBody]JsonPatchDocument<TModel> patch)
         {
             if (!this.ModelState.IsValid)
             {
@@ -98,7 +99,7 @@ namespace Blackmaw.Api.Core
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<ActionResult<NoContentResult>> Delete(string id)
         {
             var todo = this.Context.Set<TEntity>().Find(id);
             if (todo == null)
@@ -112,19 +113,104 @@ namespace Blackmaw.Api.Core
         }
     }
 
-    public abstract class ControllerBase<TEntity, TModel, TListModel> : ControllerBase<TEntity, TModel>
+    public abstract class ControllerBase<TEntity, TModel, TListModel> : Controller
         where TEntity : EntityBase
         where TModel : ModelBase
         where TListModel : ModelBase
     {
-        protected ControllerBase(BmDbContext context, ILogger logger) : base(context, logger)
+        protected readonly BmDbContext Context;
+        protected readonly ILogger Logger;
+
+        protected ControllerBase(BmDbContext context, ILogger logger)
         {
+            this.Context = context;
+            this.Logger = logger;
         }
 
         [HttpGet]
-        public new async Task<IEnumerable<TListModel>> GetAll()
+        public virtual async Task<ActionResult<IEnumerable<TListModel>>> GetAll()
         {
             return await this.Context.Set<TEntity>().ProjectTo<TListModel>().ToListAsync();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TModel>> GetById(string id)
+        {
+            var record = await this.Context.Set<TEntity>().FindAsync(id);
+            if (record == null)
+            {
+                return NotFound();
+            }
+
+            var result = Mapper.Map<TModel>(record);
+            return result;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<CreatedAtRouteResult>> Create([FromBody] TModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest();
+            }
+
+            var record = Mapper.Map<TEntity>(model);
+            this.Context.Set<TEntity>().Add(record);
+            await this.Context.SaveChangesAsync();
+
+            return CreatedAtRoute(new { id = record.Id }, record);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<AcceptedAtRouteResult>> Update(string id, [FromBody] TModel model)
+        {
+            if (model == null || model.Id != id)
+            {
+                return BadRequest();
+            }
+
+            var record = this.Context.Set<TEntity>().Find(id);
+            if (record == null)
+            {
+                return NotFound();
+            }
+
+            Mapper.Map(model, record);
+
+            this.Context.Set<TEntity>().Update(record);
+            await this.Context.SaveChangesAsync();
+            return AcceptedAtRoute(new { id = model.Id }, model);
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<AcceptedAtRouteResult>> Patch(string id, [FromBody]JsonPatchDocument<TModel> patch)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(this.ModelState);
+            }
+
+            var record = await this.Context.Set<TEntity>().FindAsync(id);
+            var mappedRecord = Mapper.Map<TModel>(record);
+            patch.ApplyTo(mappedRecord, this.ModelState);
+
+            Mapper.Map(mappedRecord, record);
+
+            return AcceptedAtRoute(new { id = record.Id }, record);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<NoContentResult>> Delete(string id)
+        {
+            var todo = this.Context.Set<TEntity>().Find(id);
+            if (todo == null)
+            {
+                return NotFound();
+            }
+
+            this.Context.Set<TEntity>().Remove(todo);
+            await this.Context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

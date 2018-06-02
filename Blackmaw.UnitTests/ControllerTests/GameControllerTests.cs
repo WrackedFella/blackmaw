@@ -36,7 +36,7 @@ namespace Blackmaw.UnitTests.ControllerTests
             var model = new GameModel();
 
             // Act
-            var result = await controller.Create(model) as CreatedAtRouteResult;
+            var result = (await controller.Create(model)).Value;
 
             // Assert
             Assert.NotNull(result);
