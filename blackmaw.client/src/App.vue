@@ -60,13 +60,11 @@
 <style lang="scss" scoped>
 .md-app {
   height: 100%;
-  border: 1px solid rgba(#000, 0.12);
 }
 
-// Demo purposes only
-.md-drawer {
-  width: 230px;
-  max-width: calc(100vw - 125px);
+.md-content {
+    border-right: none;
+    border-left: none;
 }
 </style>
 
