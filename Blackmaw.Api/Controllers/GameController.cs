@@ -10,7 +10,6 @@ namespace Blackmaw.Api.Controllers
     {
         public GameController(BmDbContext context, ILogger logger) : base(context, logger)
         {
-            
         }
     }
 }

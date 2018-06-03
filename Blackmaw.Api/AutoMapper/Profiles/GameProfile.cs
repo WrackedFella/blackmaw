@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using Blackmaw.Api.Core;
 using Blackmaw.Api.Models;
 using Blackmaw.Dal.Core;
@@ -10,7 +11,8 @@ namespace Blackmaw.Api.AutoMapper.Profiles
     {
         public GameProfile()
         {
-            CreateMap<Game, GameModel>();
+            CreateMap<Game, GameModel>()
+                .ForMember(dest => dest.CharacterNames, opt => opt.MapFrom(src => src.Characters.Select(x => x.Name).ToList()));
             CreateMap<GameModel, Game>()
                 .IncludeBase<ModelBase, EntityBase>();
         }

@@ -48,11 +48,6 @@ namespace Blackmaw.Api.Core
         [HttpPost]
         public async Task<ActionResult<CreatedAtRouteResult>> Create([FromBody] TModel model)
         {
-            if (model == null)
-            {
-                return BadRequest();
-            }
-
             var record = Mapper.Map<TEntity>(model);
             this.Context.Set<TEntity>().Add(record);
             await this.Context.SaveChangesAsync();
@@ -84,11 +79,6 @@ namespace Blackmaw.Api.Core
         [HttpPatch("{id}")]
         public async Task<ActionResult<AcceptedAtRouteResult>> Patch(string id, [FromBody]JsonPatchDocument<TModel> patch)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return new BadRequestObjectResult(this.ModelState);
-            }
-            
             var record = await this.Context.Set<TEntity>().FindAsync(id);
             var mappedRecord = Mapper.Map<TModel>(record);
             patch.ApplyTo(mappedRecord, this.ModelState);
@@ -149,11 +139,6 @@ namespace Blackmaw.Api.Core
         [HttpPost]
         public async Task<ActionResult<CreatedAtRouteResult>> Create([FromBody] TModel model)
         {
-            if (model == null)
-            {
-                return BadRequest();
-            }
-
             var record = Mapper.Map<TEntity>(model);
             this.Context.Set<TEntity>().Add(record);
             await this.Context.SaveChangesAsync();
@@ -185,11 +170,6 @@ namespace Blackmaw.Api.Core
         [HttpPatch("{id}")]
         public async Task<ActionResult<AcceptedAtRouteResult>> Patch(string id, [FromBody]JsonPatchDocument<TModel> patch)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return new BadRequestObjectResult(this.ModelState);
-            }
-
             var record = await this.Context.Set<TEntity>().FindAsync(id);
             var mappedRecord = Mapper.Map<TModel>(record);
             patch.ApplyTo(mappedRecord, this.ModelState);
