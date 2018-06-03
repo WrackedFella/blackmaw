@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://localhost/Blackmaw.Api",
+      "applicationUrl": "https://localhost/Blackmaw.Api",
       "sslPort": 0
     },
     "iisExpress": {
@@ -14,7 +14,14 @@
   "profiles": {
     "IIS": {
       "commandName": "IIS",
-      "launchBrowser": true
+      "launchBrowser": true,
+      "environmentVariables": {
+        "JwtAudience": "https://localhost/blackmaw",
+        "JwtKey": "ec9a3791-6e64-44f6-b06d-ef2c4ba30340",
+        "JwtDomain": "https://localhost/Blackmaw.Api",
+        "JwtIssuer": "https://localhost/Blackmaw.Api",
+        "ConnStr": "server=.;database=blackmaw.dev;Username=blackmaw;Password=password;Persist Security Info=True"
+      }
     }
   }
 }

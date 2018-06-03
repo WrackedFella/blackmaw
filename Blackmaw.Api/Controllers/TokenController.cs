@@ -9,7 +9,6 @@ using Blackmaw.Dal.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
@@ -21,22 +20,23 @@ namespace Blackmaw.Api.Controllers
         private readonly SignInManager<BlackmawUser> _signInManager;
         private readonly UserManager<BlackmawUser> _userManager;
         private readonly ILogger<TokenController> _logger;
-        private readonly IConfiguration _configuration;
+        private readonly string _key = Environment.GetEnvironmentVariable("JwtKey");
+        private readonly string _issuer = Environment.GetEnvironmentVariable("JwtIssuer");
+        private readonly string _audience = Environment.GetEnvironmentVariable("JwtAudience");
 
         public TokenController(
             UserManager<BlackmawUser> userManager,
             SignInManager<BlackmawUser> signInManager,
-            IConfiguration configuration,
             ILogger<TokenController> logger)
         {
             this._signInManager = signInManager;
             this._userManager = userManager;
             this._logger = logger;
-            this._configuration = configuration;
         }
         
         [AllowAnonymous]
         [HttpPost]
+        [Route("Auth")]
         public async Task<IActionResult> Authenticate([FromBody]LoginModel model)
         {
             var result = await this._signInManager.PasswordSignInAsync(model.Username, model.Password, false, false);
@@ -68,17 +68,18 @@ namespace Blackmaw.Api.Controllers
             };
             var result = await this._userManager.CreateAsync(user, model.Password);
 
-            if (result.Errors.Any())
+            if (!result.Errors.Any())
             {
-                foreach (var error in result.Errors)
-                {
-                    this._logger.LogError($"Error updating user. {error.Code} : {error.Description}");
-                }
-
-                return BadRequest();
+                return await Authenticate(new LoginModel {Username = model.Username, Password = model.Password});
             }
-            
-            return await Authenticate(new LoginModel { Username = model.Username, Password = model.Password });
+
+            foreach (var error in result.Errors)
+            {
+                this._logger.LogError($"Error updating user. {error.Code} : {error.Description}");
+            }
+
+            return BadRequest();
+
         }
 
         private object GenerateJwtToken(string username, BlackmawUser user)
@@ -92,11 +93,11 @@ namespace Blackmaw.Api.Controllers
                 new Claim(ClaimTypes.Name, username)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._configuration["Jwt:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._key));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var expires = DateTime.Now.AddDays(Convert.ToDouble(30));
 
-            var token = new JwtSecurityToken(this._configuration["Issuer"], this._configuration["Issuer"],
+            var token = new JwtSecurityToken(this._issuer, _audience,
                 claims,
                 expires: expires,
                 signingCredentials: creds

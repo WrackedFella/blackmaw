@@ -20,19 +20,15 @@ namespace Blackmaw.Api.ExceptionHandling
 
         public async Task Invoke(HttpContext context /* other dependencies */)
         {
-#if DEBUG
-            await this._next(context);
-#else
             try
             {
                 await this._next(context);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
+                this._logger.LogError(ex, ex.Message);
                 await HandleExceptionAsync(context, ex);
             }
-#endif
         }
 
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)

@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO.Compression;
 using Blackmaw.Api.AutoMapper;
 using Blackmaw.Api.ExceptionHandling;
@@ -22,6 +23,8 @@ namespace Blackmaw.Api
 {
     public class Startup
     {
+        private readonly string _connStr = Environment.GetEnvironmentVariable("ConnStr");
+        
         public Startup(IConfiguration configuration)
         {
             this.Configuration = configuration;
@@ -59,6 +62,7 @@ namespace Blackmaw.Api
             app.UseCors("CorsPolicy");
             app.UseStaticFiles();
             app.UseMiddleware(typeof(ExceptionMiddleware));
+            app.UseHttpsRedirection();
             app.UseMvc();
         }
 
@@ -104,7 +108,7 @@ namespace Blackmaw.Api
         {
             services.AddDbContext<BmDbContext>(options =>
             {
-                options.UseSqlServer(this.Configuration.GetConnectionString("BmConnStr"));
+                options.UseSqlServer(this._connStr);
                 options.UseLazyLoadingProxies();
 #if DEBUG
                 options.EnableSensitiveDataLogging();
@@ -125,7 +129,7 @@ namespace Blackmaw.Api
 
             services
                 .AddMvc(options => options.Filters.Add(new AuthorizeFilter(policy)))
-                .AddJsonOptions(options => options.SerializerSettings.DateFormatString = "yyyy-MM-dd");
+                .AddJsonOptions(options => options.SerializerSettings.DateFormatString = "YYYY-MM-DDTHH:mm:ssZ");
         }
 
         private void ConfigureLogging(IServiceCollection services)
