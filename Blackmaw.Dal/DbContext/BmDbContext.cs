@@ -13,11 +13,6 @@ namespace Blackmaw.Dal.DbContext
         public BmDbContext(DbContextOptions<BmDbContext> options) : base(options)
         {
         }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("server=.;database=blackmaw.dev;Integrated Security=True;Persist Security Info=True");
-        }
         
         protected override void OnModelCreating(ModelBuilder builder)
         {
